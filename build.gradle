@@ -1,11 +1,15 @@
 allprojects {
-    apply plugin: 'idea'
     apply plugin: 'scala'
+    apply plugin: 'java'
     apply plugin: 'maven'
+    apply plugin: 'signing'
 
     repositories {
         mavenCentral()
     }
+
+    group = "net.nikore.etcd"
+    version = "0.1"
 }
 
 
@@ -18,4 +22,65 @@ dependencies {
     testCompile 'junit:junit:4.11'
     testCompile 'org.scalatest:scalatest_2.10:2.1.5'
     testRuntime 'org.scala-lang.modules:scala-xml_2.10:1.0.1'
+}
+
+task scaladocJar(type: Jar, dependsOn: scaladoc) {
+    classifier = 'javadoc'
+    from 'build/docs/scaladoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+
+    archives scaladocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                name 'scala-etcd'
+                packaging 'jar'
+                description 'native scala client for etcd'
+                url 'https://github.com/nikore/scala-etcd'
+
+                scm {
+                    url 'scm:git@github.com:nikore/scala-etcd.git'
+                    connection 'scm:git@github.com:nikore/scala-etcd.git'
+                    developerConnection 'scm:git@github.com:nikore/scala-etcd.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'nikore'
+                        name 'Matt Christiansen'
+                    }
+                }
+            }
+        }
+    }
 }
