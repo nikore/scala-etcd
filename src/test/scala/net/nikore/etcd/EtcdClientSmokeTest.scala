@@ -3,6 +3,7 @@ package net.nikore.etcd
 import scala.concurrent.Future
 import net.nikore.etcd.EtcdJsonProtocol.EtcdResponse
 import scala.util.{Failure, Success}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object EtcdClientSmokeTest {
   val client = new EtcdClient("http://localhost:4001")
