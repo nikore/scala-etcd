@@ -50,11 +50,19 @@ class EtcdClient(conn: String) {
         ~> mapErrors
         ~> unmarshal[EtcdListResponse]
       )
-    pipline(Get(conn + "/v2/keys/" + dir + "/"))
+
+    pipline(Get(conn + "/v2/keys/" + cleanString(dir) + "/"))
   }
 
   def deleteDir(dir: String): Future[EtcdResponse] = {
     defaultPipeline(Delete(conn + "/v2/keys/" + dir + "?recursive=true"))
+  }
+
+  private def cleanString(str: String): String = {
+    str match {
+      case s if s.startsWith("/") => s.stripPrefix("/")
+      case _ => str
+    }
   }
 
   private val mapErrors = (response: HttpResponse) => {

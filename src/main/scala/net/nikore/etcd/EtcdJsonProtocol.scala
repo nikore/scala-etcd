@@ -5,7 +5,7 @@ import spray.json._
 object EtcdJsonProtocol extends DefaultJsonProtocol {
 
   //single key/values
-  case class NodeResponse(key: String, value: String, modifiedIndex: Int, createdIndex: Int)
+  case class NodeResponse(key: String, value: Option[String], modifiedIndex: Int, createdIndex: Int)
   case class EtcdResponse(action: String, node: NodeResponse, prevNode: Option[NodeResponse])
 
   //for hanlding dirs
