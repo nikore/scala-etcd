@@ -33,7 +33,7 @@ class EtcdClient(conn: String) {
 
   def setKey(key: String, value: String): Future[EtcdResponse] = {
     val encodedString = URLEncoder.encode(value, "UTF-8")
-    defaultPipeline(Put(conn + "/v2/keys/" + key + "?value=" + encodedString))
+    defaultPipeline(Put(conn + "/v2/keys/" + cleanString(key) + "?value=" + encodedString))
   }
 
   def deleteKey(key: String): Future[EtcdResponse] = {

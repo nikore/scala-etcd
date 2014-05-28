@@ -9,7 +9,7 @@ object EtcdJsonProtocol extends DefaultJsonProtocol {
   case class EtcdResponse(action: String, node: NodeResponse, prevNode: Option[NodeResponse])
 
   //for hanlding dirs
-  case class NodeListResponse(key: String, dir: Boolean, nodes: List[NodeResponse])
+  case class NodeListResponse(key: String, dir: Boolean, nodes: Option[List[NodeResponse]])
   case class EtcdListResponse(action: String, node: NodeListResponse)
 
   //for handling error messages
