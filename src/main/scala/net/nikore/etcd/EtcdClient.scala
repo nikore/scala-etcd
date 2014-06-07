@@ -20,49 +20,43 @@ import net.nikore.etcd.EtcdJsonProtocol.EtcdListResponse
 
 class EtcdClient(conn: String) {
 
+  private val baseUrl = conn + "/v2/keys/"
   implicit val system = ActorSystem("etcd-client")
   import system.dispatcher
 
   def getKey(key: String): Future[EtcdResponse] = {
-    getKeyWait(key, wait = false)
+    getKeyAndWait(key, wait = false)
   }
 
-  def getKeyWait(key: String, wait: Boolean): Future[EtcdResponse] = {
-    defaultPipeline(Get(conn + "/v2/keys/" + key + "?wait=" + wait))
+  def getKeyAndWait(key: String, wait: Boolean = true): Future[EtcdResponse] = {
+    defaultPipeline(Get(baseUrl + key + "?wait=" + wait))
   }
 
   def setKey(key: String, value: String): Future[EtcdResponse] = {
     val encodedString = URLEncoder.encode(value, "UTF-8")
-    defaultPipeline(Put(conn + "/v2/keys/" + cleanString(key) + "?value=" + encodedString))
+    defaultPipeline(Put(baseUrl + key + "?value=" + encodedString))
   }
 
   def deleteKey(key: String): Future[EtcdResponse] = {
-    defaultPipeline(Delete(conn + "/v2/keys/" + key))
+    defaultPipeline(Delete(baseUrl + key))
   }
 
   def createDir(dir: String): Future[EtcdResponse] = {
-    defaultPipeline(Put(conn + "/v2/keys/" + dir + "?dir=true"))
+    defaultPipeline(Put(baseUrl + dir + "?dir=true"))
   }
 
-  def listDir(dir: String): Future[EtcdListResponse] = {
+  def listDir(dir: String, recursive: Boolean = false): Future[EtcdListResponse] = {
     val pipline: HttpRequest => Future[EtcdListResponse] = (
       sendReceive
         ~> mapErrors
         ~> unmarshal[EtcdListResponse]
       )
 
-    pipline(Get(conn + "/v2/keys/" + cleanString(dir) + "/"))
+    pipline(Get(baseUrl + dir + "/?recursive=" + recursive))
   }
 
-  def deleteDir(dir: String): Future[EtcdResponse] = {
-    defaultPipeline(Delete(conn + "/v2/keys/" + dir + "?recursive=true"))
-  }
-
-  private def cleanString(str: String): String = {
-    str match {
-      case s if s.startsWith("/") => s.stripPrefix("/")
-      case _ => str
-    }
+  def deleteDir(dir: String, recursive: Boolean = false): Future[EtcdResponse] = {
+    defaultPipeline(Delete(baseUrl + dir + "?recursive=" + recursive))
   }
 
   private val mapErrors = (response: HttpResponse) => {
