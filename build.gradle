@@ -2,14 +2,14 @@ allprojects {
     apply plugin: 'scala'
     apply plugin: 'java'
     apply plugin: 'maven'
-    apply plugin: 'signing'
+//    apply plugin: 'signing'
 
     repositories {
         mavenCentral()
     }
 
     group = "net.nikore.etcd"
-    version = "0.1"
+    version = "0.2"
 }
 
 
@@ -41,17 +41,15 @@ artifacts {
     archives sourcesJar
 }
 
-signing {
-    sign configurations.archives
-}
-
 uploadArchives {
     repositories {
+//      signing {
+//        sign configurations.archives
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
+                authentication(userName: mavenUsername, password: mavenPassword)
             }
 
             pom.project {
@@ -83,4 +81,5 @@ uploadArchives {
             }
         }
     }
+//    }
 }
