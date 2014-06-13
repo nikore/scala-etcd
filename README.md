@@ -11,7 +11,7 @@ represent the json.
 
   val client = new EtcdClient("http://localhost:4001")
 
-  client.setKey("configKey", configValue")
+  client.setKey("configKey", "configValue")
 
   val response: Future[EtcdResponse] = client.getKey("configKey")
 
