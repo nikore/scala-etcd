@@ -2,7 +2,7 @@ allprojects {
     apply plugin: 'scala'
     apply plugin: 'java'
     apply plugin: 'maven'
-//    apply plugin: 'signing'
+    apply plugin: 'signing'
 
     repositories {
         mavenCentral()
@@ -43,43 +43,43 @@ artifacts {
 
 uploadArchives {
     repositories {
-//      signing {
-//        sign configurations.archives
-        mavenDeployer {
-//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        signing {
+            sign configurations.archives
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: mavenUsername, password: mavenPassword)
-            }
-
-            pom.project {
-                name 'scala-etcd'
-                packaging 'jar'
-                description 'native scala client for etcd'
-                url 'https://github.com/nikore/scala-etcd'
-
-                scm {
-                    url 'scm:git@github.com:nikore/scala-etcd.git'
-                    connection 'scm:git@github.com:nikore/scala-etcd.git'
-                    developerConnection 'scm:git@github.com:nikore/scala-etcd.git'
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: mavenUsername, password: mavenPassword)
                 }
 
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'repo'
+                pom.project {
+                    name 'scala-etcd'
+                    packaging 'jar'
+                    description 'native scala client for etcd'
+                    url 'https://github.com/nikore/scala-etcd'
+
+                    scm {
+                        url 'scm:git@github.com:nikore/scala-etcd.git'
+                        connection 'scm:git@github.com:nikore/scala-etcd.git'
+                        developerConnection 'scm:git@github.com:nikore/scala-etcd.git'
                     }
-                }
 
-                developers {
-                    developer {
-                        id 'nikore'
-                        name 'Matt Christiansen'
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'nikore'
+                            name 'Matt Christiansen'
+                        }
                     }
                 }
             }
         }
     }
-//    }
 }
