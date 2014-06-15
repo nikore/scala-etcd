@@ -11,8 +11,7 @@ import scala.concurrent.Future
 import EtcdJsonProtocol._
 import spray.httpx.SprayJsonSupport._
 import spray.json._
-import spray.http.HttpRequest
-import spray.http.HttpResponse
+import spray.http.{Uri, HttpRequest, HttpResponse}
 import EtcdExceptions._
 import java.net.URLEncoder
 import net.nikore.etcd.EtcdJsonProtocol.EtcdResponse
@@ -34,7 +33,7 @@ class EtcdClient(conn: String) {
 
   def setKey(key: String, value: String): Future[EtcdResponse] = {
     val encodedString = URLEncoder.encode(value, "UTF-8")
-    defaultPipeline(Put(baseUrl + key + "?value=" + encodedString))
+    defaultPipeline(Put(Uri(baseUrl + key + "?value=" + encodedString, Uri.ParsingMode.RelaxedWithRawQuery)))
   }
 
   def deleteKey(key: String): Future[EtcdResponse] = {

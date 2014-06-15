@@ -5,7 +5,7 @@ import net.nikore.etcd.EtcdJsonProtocol.EtcdResponse
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object EtcdClientSmokeTest {
+object EtcdClientSmokeTest extends App {
   val client = new EtcdClient("http://localhost:4001")
 
   val response: Future[EtcdResponse] = client.setKey("test4","com.java.property1=value2\n" +
