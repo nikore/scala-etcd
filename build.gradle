@@ -9,19 +9,15 @@ allprojects {
     }
 
     group = "net.nikore.etcd"
-    version = "0.3"
+    version = "0.4"
 }
 
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.10.3'
-    compile 'io.spray:spray-client:1.3.1'
-    compile 'io.spray:spray-json_2.10:1.2.6'
-    compile 'com.typesafe.akka:akka-actor_2.10:2.3.2'
-
-    testCompile 'junit:junit:4.11'
-    testCompile 'org.scalatest:scalatest_2.10:2.1.5'
-    testRuntime 'org.scala-lang.modules:scala-xml_2.10:1.0.1'
+    compile 'org.scala-lang:scala-library:2.11.2'
+    compile 'io.spray:spray-client_2.11:1.3.1'
+    compile 'io.spray:spray-json_2.11:1.3.0'
+    compile 'com.typesafe.akka:akka-actor_2.11:2.3.6'
 }
 
 task scaladocJar(type: Jar, dependsOn: scaladoc) {

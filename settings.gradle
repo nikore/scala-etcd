@@ -16,4 +16,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'scala-etcd'
+rootProject.name = 'scala-etcd_2.11'
