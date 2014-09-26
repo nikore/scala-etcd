@@ -10,13 +10,13 @@ public class JavaEtcdClientSmokeTest {
   public static void main(String ... args) throws Exception {
     EtcdClient client = new EtcdClient("http://localhost:4001");
 
-    Future<EtcdJsonProtocol.EtcdResponse> setResponse = client.setKey("test1", "testValue");
+//    Future<EtcdJsonProtocol.EtcdResponse> setResponse = client.setKey("test1", "testValue");
+//
+//    EtcdJsonProtocol.EtcdResponse etcdSetResponse = Await.result(setResponse, Duration.create(5, TimeUnit.SECONDS));
+//
+//    System.out.println(etcdSetResponse);
 
-    EtcdJsonProtocol.EtcdResponse etcdSetResponse = Await.result(setResponse, Duration.create(5, TimeUnit.SECONDS));
-
-    System.out.println(etcdSetResponse);
-
-    Future<EtcdJsonProtocol.EtcdResponse> getResponse = client.getKey("test1");
+    Future<EtcdJsonProtocol.EtcdResponse> getResponse = client.getKey("test4");
 
     EtcdJsonProtocol.EtcdResponse etcdResponse = Await.result(getResponse, Duration.create(5, TimeUnit.SECONDS));
 

@@ -1,26 +1,25 @@
 package net.nikore.etcd
 
-import scala.concurrent.duration._
+import java.net.URLEncoder
+
 import akka.actor.ActorSystem
-import akka.pattern.ask
 import akka.io.IO
+import akka.pattern.ask
+import net.nikore.etcd.EtcdExceptions._
+import net.nikore.etcd.EtcdJsonProtocol._
 import spray.can.Http
 import spray.client.pipelining._
-import spray.util._
-import scala.concurrent.Future
-import EtcdJsonProtocol._
+import spray.http._
 import spray.httpx.SprayJsonSupport._
 import spray.json._
-import spray.http.{Uri, HttpRequest, HttpResponse}
-import EtcdExceptions._
-import java.net.URLEncoder
-import net.nikore.etcd.EtcdJsonProtocol.EtcdResponse
-import net.nikore.etcd.EtcdJsonProtocol.EtcdListResponse
+import spray.util._
+
+import scala.concurrent.Future
+import scala.concurrent.duration._
 
 class EtcdClient(conn: String) {
-
-  private val baseUrl = conn + "/v2/keys/"
-  implicit val system = ActorSystem("etcd-client")
+  private val baseUrl = s"$conn/v2/keys"
+  private implicit val system = ActorSystem("etcd-client")
   import system.dispatcher
 
   def getKey(key: String): Future[EtcdResponse] = {
@@ -28,20 +27,22 @@ class EtcdClient(conn: String) {
   }
 
   def getKeyAndWait(key: String, wait: Boolean = true): Future[EtcdResponse] = {
-    defaultPipeline(Get(baseUrl + key + "?wait=" + wait))
+    defaultPipeline(Get(s"$baseUrl/$key?wait=$wait"))
   }
 
   def setKey(key: String, value: String): Future[EtcdResponse] = {
-    val encodedString = URLEncoder.encode(value, "UTF-8")
-    defaultPipeline(Put(Uri(baseUrl + key + "?value=" + encodedString, Uri.ParsingMode.RelaxedWithRawQuery)))
+    defaultPipeline(HttpRequest(HttpMethods.PUT, Uri(s"$baseUrl/$key"), entity = HttpEntity(
+    ContentType(MediaTypes.`application/x-www-form-urlencoded`, HttpCharsets.`UTF-8`),
+    s"value=${URLEncoder.encode(value,"UTF-8")}"
+    )))
   }
 
   def deleteKey(key: String): Future[EtcdResponse] = {
-    defaultPipeline(Delete(baseUrl + key))
+    defaultPipeline(Delete(s"$baseUrl/$key"))
   }
 
   def createDir(dir: String): Future[EtcdResponse] = {
-    defaultPipeline(Put(baseUrl + dir + "?dir=true"))
+    defaultPipeline(Put(s"$baseUrl/$dir?dir=true"))
   }
 
   def listDir(dir: String, recursive: Boolean = false): Future[EtcdListResponse] = {
@@ -51,11 +52,11 @@ class EtcdClient(conn: String) {
         ~> unmarshal[EtcdListResponse]
       )
 
-    pipline(Get(baseUrl + dir + "/?recursive=" + recursive))
+    pipline(Get(s"$baseUrl/$dir/?recursive=$recursive"))
   }
 
   def deleteDir(dir: String, recursive: Boolean = false): Future[EtcdResponse] = {
-    defaultPipeline(Delete(baseUrl + dir + "?recursive=" + recursive))
+    defaultPipeline(Delete(s"$baseUrl/$dir?recursive=$recursive"))
   }
 
   private val mapErrors = (response: HttpResponse) => {

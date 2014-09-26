@@ -1,7 +1,6 @@
 package net.nikore.etcd
 
 object EtcdExceptions {
-
   object Exception {
     def apply(msg: String, etype: String, errorCode: Int) = new EtcdException {
       def message = msg
@@ -29,6 +28,4 @@ object EtcdExceptions {
   }
 
   case class KeyNotFoundException(message: String, exceptionType: String, code: Int) extends EtcdException
-
-
 }

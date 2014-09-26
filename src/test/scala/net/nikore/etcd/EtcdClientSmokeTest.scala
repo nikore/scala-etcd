@@ -11,7 +11,9 @@ object EtcdClientSmokeTest extends App {
   val response: Future[EtcdResponse] = client.setKey("test4","com.java.property1=value2\n" +
     "com.java.property3=vale4\n" +
     "com.java.property4=value6\n" +
-    "com.java.property5=value10\n"
+    "com.java.property5=value10\n" +
+    "com.java.property6=value11;value12;value13\n" +
+    "com.java.property7=value14&value16&value17\n"
   )
 
   //  val response: Future[EtcdResponse] = client.setKey("test3","yep")
