@@ -1,7 +1,5 @@
 package net.nikore.etcd
 
-import java.net.URLEncoder
-
 import akka.actor.ActorSystem
 import akka.io.IO
 import akka.pattern.ask
@@ -31,10 +29,7 @@ class EtcdClient(conn: String) {
   }
 
   def setKey(key: String, value: String): Future[EtcdResponse] = {
-    defaultPipeline(HttpRequest(HttpMethods.PUT, Uri(s"$baseUrl/$key"), entity = HttpEntity(
-    ContentType(MediaTypes.`application/x-www-form-urlencoded`, HttpCharsets.`UTF-8`),
-    s"value=${URLEncoder.encode(value,"UTF-8")}"
-    )))
+    defaultPipeline(Put(Uri(s"$baseUrl/$key").withQuery(Map("value" -> value))))
   }
 
   def deleteKey(key: String): Future[EtcdResponse] = {
