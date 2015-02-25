@@ -16,4 +16,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'scala-etcd_2.11'
+apply from: file('scala.gradle')

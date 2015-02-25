@@ -25,17 +25,29 @@ represent the json.
   }
 ```
 
-This library is avilable in maven
+This library is avilable in maven central and is cross compiled for 2.10 and 2.11
 
 ```XML
 
 <dependency>
 	<groupId>net.nikore.etcd</groupId>
-	<artifactId>scala-etcd</artifactId>
-	<version>0.3</version>
+	<artifactId>scala-etcd_2.11</artifactId>
+	<version>0.7</version>
 </dependency>
 ```
 
-you can see here for all versions: http://repo1.maven.org/maven2/net/nikore/etcd/scala-etcd/
+or
+
+```XML
+
+
+<dependency>
+	<groupId>net.nikore.etcd</groupId>
+	<artifactId>scala-etcd_2.10</artifactId>
+	<version>0.7</version>
+</dependency>
+```
+
+you can see here for all versions: http://repo1.maven.org/maven2/net/nikore/etcd/
 
 [etcd]: http://coreos.com/blog/distributed-configuration-with-etcd/

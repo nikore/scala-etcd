@@ -1,3 +1,5 @@
+apply from: file('scala.gradle')
+
 allprojects {
     apply plugin: 'scala'
     apply plugin: 'java'
@@ -8,33 +10,74 @@ allprojects {
         mavenCentral()
     }
 
-    group = "net.nikore.etcd"
-    version = "0.7"
+    archivesBaseName = "scala-etcd_${baseScalaVersion}"
 }
-
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.11.2'
-    compile 'io.spray:spray-client_2.11:1.3.2'
-    compile 'io.spray:spray-json_2.11:1.3.1'
-    compile 'com.typesafe.akka:akka-actor_2.11:2.3.6'
+    compile 'org.scala-lang:scala-library:$scalaVersion'
+
+    if(scalaVersion.startsWith('2.11')) {
+        compile 'io.spray:spray-client_2.11:1.3.2'
+        compile 'io.spray:spray-json_2.11:1.3.1'
+        compile 'com.typesafe.akka:akka-actor_2.11:2.3.6'
+    } else if (scalaVersion.startsWith('2.10')) {
+        compile 'io.spray:spray-client_2.10:1.3.2'
+        compile 'io.spray:spray-json_2.10:1.3.1'
+        compile 'com.typesafe.akka:akka-actor_2.10:2.3.6'
+    }
 }
 
-task scaladocJar(type: Jar, dependsOn: scaladoc) {
-    classifier = 'javadoc'
-    from 'build/docs/scaladoc'
+for ( sv in ['2_10_4', '2_11_5']) {
+    String svInDot = sv.replaceAll("_",".")
+
+    tasks.create(name: "jar_core_${sv}", type: GradleBuild) {
+        buildFile = './build.gradle'
+        tasks = ['jar']
+        startParameter.projectProperties = [scalaVersion: "${svInDot}"]
+    }
+    tasks.create(name: "test_core_${sv}", type: GradleBuild) {
+        buildFile = './build.gradle'
+        tasks = ['test']
+        startParameter.projectProperties = [scalaVersion: "${svInDot}"]
+    }
+    tasks.create(name: "srcJar_${sv}", type: GradleBuild) {
+        buildFile = './build.gradle'
+        tasks = ['srcJar']
+        startParameter.projectProperties = [scalaVersion: "${svInDot}"]
+    }
+    tasks.create(name: "docsJar_${sv}", type: GradleBuild) {
+        buildFile = './build.gradle'
+        tasks = ['docsJar']
+        startParameter.projectProperties = [scalaVersion: "${svInDot}"]
+    }
+    tasks.create(name: "uploadCoreArchives_${sv}", type: GradleBuild) {
+        buildFile = './build.gradle'
+        tasks = ['uploadArchives']
+        startParameter.projectProperties = [scalaVersion: "${svInDot}"]
+    }
 }
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
+tasks.create(name: "jarAll", dependsOn: ['jar_core_2_10_4', 'jar_core_2_11_5']) {}
+tasks.create(name: "srcJarAll", dependsOn: ['srcJar_2_10_4', 'srcJar_2_11_5']) {}
+tasks.create(name: "docsJarAll", dependsOn: ['docsJar_2_10_4', 'docsJar_2_11_5']) {}
+tasks.create(name: "testAll", dependsOn: ['test_core_2_10_4', 'test_core_2_11_5']) {}
+tasks.create(name: "uploadArchivesAll", dependsOn: ['uploadCoreArchives_2_10_4', 'uploadCoreArchives_2_11_5']) {}
+
+task srcJar(type:Jar) {
     classifier = 'sources'
+    from sourceSets.main.java
 }
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier 'javadoc'
+    from javadoc.destinationDir
+}
+task docsJar(dependsOn: javadocJar)
 
 artifacts {
     archives jar
 
-    archives scaladocJar
-    archives sourcesJar
+    archives javadocJar
+    archives srcJar
 }
 
 uploadArchives {
@@ -48,6 +91,7 @@ uploadArchives {
                     authentication(userName: mavenUsername, password: mavenPassword)
                 }
 
+                pom.artifactId = "${archivesBaseName}"
                 pom.project {
                     name 'scala-etcd'
                     packaging 'jar'
