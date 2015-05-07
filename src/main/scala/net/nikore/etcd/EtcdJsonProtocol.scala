@@ -5,7 +5,7 @@ import spray.json._
 object EtcdJsonProtocol extends DefaultJsonProtocol {
 
   //single key/values
-  case class NodeResponse(key: String, value: Option[String], modifiedIndex: Int, createdIndex: Int)
+  case class NodeResponse(key: String, value: Option[String], modifiedIndex: Int, createdIndex: Int, ttl: Option[Int])
   case class EtcdResponse(action: String, node: NodeResponse, prevNode: Option[NodeResponse])
 
   //for hanlding dirs
@@ -15,7 +15,7 @@ object EtcdJsonProtocol extends DefaultJsonProtocol {
   //for handling error messages
   case class Error(errorCode: Int, message: String, cause: String, index: Int)
 
-  implicit val nodeResponseFormat = jsonFormat4(NodeResponse)
+  implicit val nodeResponseFormat = jsonFormat5(NodeResponse)
   implicit val etcdResponseFormat = jsonFormat3(EtcdResponse)
 
   implicit val nodeListElementFormat: JsonFormat[NodeListElement] = lazyFormat(jsonFormat4(NodeListElement))
