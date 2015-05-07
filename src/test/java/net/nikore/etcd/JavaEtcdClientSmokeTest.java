@@ -2,13 +2,15 @@ package net.nikore.etcd;
 
 import java.util.concurrent.TimeUnit;
 
+import akka.actor.ActorSystem;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 public class JavaEtcdClientSmokeTest {
   public static void main(String ... args) throws Exception {
-    EtcdClient client = new EtcdClient("http://localhost:4001");
+    ActorSystem system = ActorSystem.apply("test-etcd");
+    EtcdClient client = EtcdClient.apply("http://localhost:4001", system);
 
 //    Future<EtcdJsonProtocol.EtcdResponse> setResponse = client.setKey("test1", "testValue");
 //

@@ -9,7 +9,8 @@ represent the json.
 
 ```Scala
 
-  val client = new EtcdClient("http://localhost:4001")
+  val system = ActorSystem("etcd")
+  val client = new EtcdClient("http://localhost:4001")(system)
 
   client.setKey("configKey", "configValue")
 
@@ -18,10 +19,10 @@ represent the json.
   response onComplete {
     case Success(response: EtcdResponse) =>
       System.out.println(response)
-      client.shutdown()
+      system.shutdown()
     case Failure(error) =>
       System.out.println(error)
-      client.shutdown()
+      system.shutdown()
   }
 ```
 

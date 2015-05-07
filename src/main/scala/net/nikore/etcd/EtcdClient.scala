@@ -1,6 +1,6 @@
 package net.nikore.etcd
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorRefFactory, ActorSystem}
 import akka.io.IO
 import akka.pattern.ask
 import net.nikore.etcd.EtcdExceptions._
@@ -15,9 +15,14 @@ import spray.util._
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-class EtcdClient(conn: String) {
+object EtcdClient {
+  def apply(conn: String = "http://localhost:4001")(implicit system: ActorRefFactory) = {
+    new EtcdClient(conn)(system)
+  }
+}
+
+class EtcdClient(conn: String)(implicit val system: ActorRefFactory) {
   private val baseUrl = s"$conn/v2/keys"
-  private implicit val system = ActorSystem("etcd-client")
   import system.dispatcher
 
   def getKey(key: String): Future[EtcdResponse] = {
@@ -28,8 +33,9 @@ class EtcdClient(conn: String) {
     defaultPipeline(Get(s"$baseUrl/$key?wait=$wait"))
   }
 
-  def setKey(key: String, value: String): Future[EtcdResponse] = {
-    defaultPipeline(Put(Uri(s"$baseUrl/$key").withQuery(Map("value" -> value))))
+  def setKey(key: String, value: String, ttl: Option[Duration] = None): Future[EtcdResponse] = {
+    val q: Map[String, String] = Map("value" -> value, "ttl" -> ttl.map(_.toSeconds.toString).getOrElse(""))
+    defaultPipeline(Put(Uri(s"$baseUrl/$key").withQuery(q)))
   }
 
   def deleteKey(key: String): Future[EtcdResponse] = {
@@ -69,9 +75,5 @@ class EtcdClient(conn: String) {
       ~> mapErrors
       ~> unmarshal[EtcdResponse]
     )
-
-  def shutdown(): Unit = {
-    IO(Http).ask(Http.CloseAll)(1.second).await
-    system.shutdown()
-  }
 }
+
