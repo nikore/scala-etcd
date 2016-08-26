@@ -33,7 +33,7 @@ This library is avilable in maven central and is cross compiled for 2.10 and 2.1
 <dependency>
 	<groupId>net.nikore.etcd</groupId>
 	<artifactId>scala-etcd_2.11</artifactId>
-	<version>0.7</version>
+	<version>0.8</version>
 </dependency>
 ```
 
@@ -45,7 +45,7 @@ or
 <dependency>
 	<groupId>net.nikore.etcd</groupId>
 	<artifactId>scala-etcd_2.10</artifactId>
-	<version>0.7</version>
+	<version>0.8</version>
 </dependency>
 ```
 
